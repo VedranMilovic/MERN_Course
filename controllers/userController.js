@@ -3,7 +3,8 @@ import { StatusCodes } from "http-status-codes";
 import Job from "../models/JobModel.js";
 import User from "../models/UserModel.js";
 import cloudinary from "cloudinary";
-import { promises as fs } from "fs"; // file system module
+// import { promises as fs } from "fs"; // file system module
+import { formatImage } from "../middleware/multerMiddleware.js"; // named import
 
 export const getCurrentUser = async (req, res) => {
   // šaljemo cookie na front i on ga odmah šalje natrag
@@ -23,9 +24,12 @@ export const updateUser = async (req, res) => {
   delete newUser.password;
 
   if (req.file) {
+    // kad se slika uploada, dobijamo taj req.file
     // ako user mijenja image
-    const response = await cloudinary.v2.uploader.upload(req.file.path); // uploadamo sliku, ovo vraća object
-    await fs.unlink(req.file.path); // ako smo uspješno uploadali file na cloudinary, brišemo file s lokalnog sistema
+    const file = formatImage(req.file);
+
+    const response = await cloudinary.v2.uploader.upload(file); // uploadamo sliku, ovo vraća object
+    // await fs.unlink(req.file.path); // ako smo uspješno uploadali file na cloudinary, brišemo file s lokalnog sistema/ kod disk storage
     newUser.avatar = response.secure_url;
     newUser.avatarPublicId = response.public_id; // kod prvog uploadanja nema starog public_id
   }
