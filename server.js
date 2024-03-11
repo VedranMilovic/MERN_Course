@@ -42,7 +42,7 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
-app.use(express.static(path.resolve(__dirname, "./public"))); // static middleware, koristi static files iz ./public
+app.use(express.static(path.resolve(__dirname, "./client/dist"))); // static middleware, koristi static files iz ./client/dist, naš najnoviji front-end
 // path.resolve radi apsolutni path do ./public, neovisno o current script => trenutno http://localhost:5100/avatar-1.jpg otvara fotku!
 //IMPORTANT time nam je public folder publically available
 app.use(cookieParser());
@@ -97,7 +97,7 @@ app.use(`/api/v1/users`, authenticateUser, userRouter); // zaštićene routes sa
 app.use(`/api/v1/auth`, authRouter); // public routes,  dostupne svim  userima
 
 app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "/public", "index.html")); //controller za entry point za frontend koji je u public folderu, entry je index.html
+  res.sendFile(path.resolve(__dirname, "/client/dist", "index.html")); //controller za entry point za frontend koji je u public folderu, entry je index.html
 });
 
 app.use("*", (req, res) => {
